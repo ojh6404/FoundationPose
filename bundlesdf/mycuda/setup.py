@@ -8,15 +8,15 @@
 
 
 from setuptools import setup
-import os,sys
+import os
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension
-from torch.utils.cpp_extension import load
 
 code_dir = os.path.dirname(os.path.realpath(__file__))
 
+eigen_include = os.environ.get('EIGEN_INCLUDE', '/usr/include/eigen3')
 
-nvcc_flags = ['-Xcompiler', '-O3', '-std=c++14', '-U__CUDA_NO_HALF_OPERATORS__', '-U__CUDA_NO_HALF_CONVERSIONS__', '-U__CUDA_NO_HALF2_OPERATORS__']
-c_flags = ['-O3', '-std=c++14']
+nvcc_flags = ['-Xcompiler', '-O3', '-std=c++17', '-U__CUDA_NO_HALF_OPERATORS__', '-U__CUDA_NO_HALF_CONVERSIONS__', '-U__CUDA_NO_HALF2_OPERATORS__']
+c_flags = ['-O3', '-std=c++17']
 
 setup(
     name='common',
@@ -33,9 +33,8 @@ setup(
         ],extra_compile_args={'gcc': c_flags, 'nvcc': nvcc_flags}),
     ],
     include_dirs=[
-        "/usr/local/include/eigen3",
-        "/usr/include/eigen3",
+        eigen_include,
     ],
     cmdclass={
-        'build_ext': BuildExtension
+        'build_ext': BuildExtension.with_options(use_ninja=False),
 })
